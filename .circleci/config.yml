@@ -1,0 +1,25 @@
+version: 2.1
+jobs:
+  test:
+    docker:
+      - image: node
+    steps:
+      - checkout
+      - run: yarn install
+      - run:
+          command: yarn jest --env node integration-tests/reporter/__tests__/simple.test.js --reporters=default --reporters=$PWD/index.js
+          environment:
+            JEST_JUNIT_OUTPUT: "/tmp/reports/junit/js-test-results.xml"
+            JEST_JUNIT_CLASSNAME: "{filepath}"
+            JEST_JUNIT_SUITE_NAME: "{filepath}"
+            JEST_JUNIT_TITLE: "{filepath}"
+      - store_test_results:
+          path: /tmp/reports
+      - store_artifacts:
+          path: /tmp/reports
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test
